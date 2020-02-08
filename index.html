@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>fb-modal-style</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #news-feed-background {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 100%;
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.4s ease, bottom 0s 0.4s ease;
+        }
+        #news-feed-background.active {
+            bottom: 0;
+            opacity: 1;
+            z-index: 300;
+            transition: opacity 0.4s ease;
+        }
+
+        #news-feed-form .form-group {
+            display: none;
+        }
+
+        #news-feed-form.active {
+            z-index: 310;
+        }
+        #news-feed-form.active .form-group {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="news-feed-background"></div>
+
+    <div class="position-relative w-100 h-100">
+        <div class="mx-auto" style="max-width: 480px;">
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+
+            <div id="news-feed-form" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Lorem ipsum dolor sit amet</h5>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. In corrupti minima quasi similique corporis, porro quaerat asperiores aut eligendi! Dolor accusantium soluta quia atque adipisci maxime pariatur architecto harum delectus?
+                    </p>
+
+                    <div class="form-group">
+                        <label>Foobar</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+            <div class="fill-lorem"></div>
+        </div>
+    </div>
+
+    <script id="text-lorem" type="text/html">
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit obcaecati in, hic sequi perferendis qui deleniti debitis saepe commodi nam autem aliquam repellendus perspiciatis cupiditate, corrupti, non voluptates id! Tempore.
+        <p>Earum magni ut ratione dolor? Doloribus, mollitia. Consequatur iusto hic cum rerum. Aut, odit voluptates. Ea est quod accusantium quo ad rem iste aliquam pariatur? Ullam tenetur quo quis quae.</p>
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script>
+        // lorem ipsum filling space
+        const textLorem = $('#text-lorem').html()
+        $('.fill-lorem').html(textLorem)
+
+        const bg = $('#news-feed-background')
+        const form = $('#news-feed-form')
+
+        // when the container is clicked, we add the focus classes
+        $(form).on('click', () => {
+            $(form).add(bg).addClass('active')
+        })
+
+        // when the background is clicked, dismiss all the effects
+        $(bg).on('click', () => {
+            $(form).add(bg).removeClass('active')
+        })
+
+        // when we scroll past the container, dismiss all the effects
+        const scrollHandler = debounce(() => {
+            if (!isElementInViewport($(form)[0])) {
+                $(form).add(bg).removeClass('active')
+            }
+        }, 250)
+        $(window).on('scroll', scrollHandler)
+
+        // https://stackoverflow.com/a/7557433/6616962
+        function isElementInViewport (el) {
+            // Special bonus for those using jQuery
+            if (typeof jQuery === "function" && el instanceof jQuery) {
+                el = el[0];
+            }
+
+            var rect = el.getBoundingClientRect();
+
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+            );
+        }
+
+        // https://davidwalsh.name/javascript-debounce-function
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+    </script>
+</body>
+</html>
